@@ -44,7 +44,6 @@
       align-items: center;
       padding: 0 28px;
       gap: 20px;
-      flex-wrap: wrap;
     }
     .logo-wrap {
       display: flex;
@@ -117,14 +116,14 @@
     }
     .social-link {
       margin-left: auto;
+      display: flex;
+      align-items: center;
     }
     .social-link a {
       color: var(--muted);
-      text-decoration: none;
       font-size: 24px;
       transition: color 0.15s;
-      display: flex;
-      align-items: center;
+      line-height: 1;
     }
     .social-link a:hover {
       color: var(--gold);
@@ -208,8 +207,7 @@
     }
     .ch-header {
       text-align: center;
-      margin-bottom: 32px;
-      position: relative;
+      margin-bottom: 20px;   /* reduced padding */
     }
     .ch-title {
       font-family: 'Bebas Neue', cursive;
@@ -221,13 +219,12 @@
       background-clip: text;
       color: transparent;
       display: inline-block;
-      padding-bottom: 8px;
-      border-bottom: 2px solid var(--gold);
+      /* removed underline (border-bottom) */
     }
     .page-wrap {
       position: relative;
       width: 100%;
-      margin-bottom: 16px;  /* increased spacing between pages */
+      margin-bottom: 24px;   /* increased spacing between pages */
       background: var(--surface);
       border-radius: 4px;
       overflow: hidden;
@@ -307,9 +304,6 @@
       }
       .jump-wrap span {
         display: none;
-      }
-      .social-link {
-        margin-left: 0;
       }
       .ch-title {
         font-size: 28px;
@@ -404,7 +398,7 @@
         block.className = 'ch-block';
         block.id = `ch-${chapterNum}`;
 
-        // New chapter header: centered, gradient text, gold underline
+        // Chapter header with reduced padding and no underline
         block.innerHTML = `
           <div class="ch-header">
             <div class="ch-title">CHAPTER ${String(chapterNum).padStart(2,'0')}</div>
