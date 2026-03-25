@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blaze Manga</title>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Bebas+Neue&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black:      #080808;
+    --dark:       #111111;
+    --panel:      #161616;
+    --border:     #1e1e1e;
+    --gold:       #c9a227;
+    --gold-dim:   #7a6118;
+    --red:        #c0392b;
+    --orange:     #e05a1a;
+    --fire:       #e67e22;
+    --white:      #f0f0f0;
+    --grey:       #888888;
+    --grey-dim:   #444444;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'Rajdhani', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── NOISE TEXTURE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.4;
+  }
+
+  /* ── HEADER ── */
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--dark);
+    border-bottom: 2px solid var(--gold-dim);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    height: 64px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.8);
+  }
+
+  .logo-area {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+  }
+
+  .logo-img {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1.5px solid var(--gold-dim);
+    box-shadow: 0 0 12px rgba(201,162,39,0.3);
+  }
+
+  .site-title {
+    font-family: 'Bangers', cursive;
+    font-size: 28px;
+    letter-spacing: 3px;
+    background: linear-gradient(135deg, var(--gold) 0%, var(--orange) 50%, var(--red) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: none;
+    line-height: 1;
+  }
+
+  /* ── JUMP BAR ── */
+  .jump-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .jump-bar label {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 14px;
+    letter-spacing: 2px;
+    color: var(--grey);
+  }
+
+  .jump-bar input {
+    width: 64px;
+    background: var(--panel);
+    border: 1.5px solid var(--gold-dim);
+    color: var(--white);
+    font-family: 'Bebas Neue', cursive;
+    font-size: 16px;
+    letter-spacing: 2px;
+    text-align: center;
+    padding: 6px 8px;
+    border-radius: 4px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .jump-bar input:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 8px rgba(201,162,39,0.3);
+  }
+
+  .jump-btn {
+    background: linear-gradient(135deg, var(--red), var(--orange));
+    border: none;
+    color: var(--white);
+    font-family: 'Bebas Neue', cursive;
+    font-size: 14px;
+    letter-spacing: 2px;
+    padding: 7px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+  }
+
+  .jump-btn:hover { opacity: 0.85; }
+  .jump-btn:active { transform: scale(0.97); }
+
+  /* ── LAYOUT ── */
+  .layout {
+    display: flex;
+    min-height: calc(100vh - 64px);
+  }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width: 220px;
+    min-width: 220px;
+    background: var(--dark);
+    border-right: 1px solid var(--border);
+    position: sticky;
+    top: 64px;
+    height: calc(100vh - 64px);
+    overflow-y: auto;
+    padding: 20px 0 40px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--gold-dim) transparent;
+  }
+
+  .sidebar::-webkit-scrollbar { width: 4px; }
+  .sidebar::-webkit-scrollbar-track { background: transparent; }
+  .sidebar::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 2px; }
+
+  .sidebar-heading {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--grey-dim);
+    padding: 0 20px 12px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 12px;
+  }
+
+  .chapter-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    background: none;
+    border: none;
+    border-left: 3px solid transparent;
+    color: var(--grey);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    padding: 10px 20px;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .chapter-btn:hover {
+    color: var(--white);
+    border-left-color: var(--gold-dim);
+    background: rgba(255,255,255,0.03);
+  }
+
+  .chapter-btn.active {
+    color: var(--gold);
+    border-left-color: var(--gold);
+    background: rgba(201,162,39,0.07);
+  }
+
+  .chapter-btn .ch-num {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 18px;
+    color: var(--red);
+    min-width: 28px;
+    line-height: 1;
+  }
+
+  .chapter-btn.active .ch-num {
+    color: var(--gold);
+  }
+
+  .chapter-btn .pg-count {
+    margin-left: auto;
+    font-size: 11px;
+    color: var(--grey-dim);
+    font-weight: 400;
+  }
+
+  /* ── MAIN READER ── */
+  .reader {
+    flex: 1;
+    padding: 40px 20px 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+
+  /* ── CHAPTER SECTION ── */
+  .chapter-section {
+    width: 100%;
+    max-width: 680px;
+    margin-bottom: 60px;
+  }
+
+  .chapter-divider {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .chapter-number {
+    font-family: 'Bangers', cursive;
+    font-size: 52px;
+    line-height: 1;
+    background: linear-gradient(135deg, var(--red) 0%, var(--orange) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 2px;
+    min-width: 80px;
+  }
+
+  .chapter-divider-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--red), transparent);
+  }
+
+  .chapter-flame {
+    font-size: 22px;
+    opacity: 0.6;
+  }
+
+  /* ── PAGE CARD ── */
+  .page-card {
+    width: 100%;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 4px;
+    position: relative;
+    transition: border-color 0.2s;
+  }
+
+  .page-card:hover {
+    border-color: var(--grey-dim);
+  }
+
+  .page-label {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: rgba(8,8,8,0.85);
+    border: 1px solid var(--gold-dim);
+    color: var(--gold);
+    font-family: 'Bebas Neue', cursive;
+    font-size: 12px;
+    letter-spacing: 2px;
+    padding: 3px 8px;
+    border-radius: 2px;
+    z-index: 2;
+    backdrop-filter: blur(4px);
+  }
+
+  .page-card img {
+    width: 100%;
+    display: block;
+    image-rendering: auto;
+  }
+
+  .page-card .page-placeholder {
+    width: 100%;
+    aspect-ratio: 828 / 1200;
+    background: var(--panel);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    color: var(--grey-dim);
+  }
+
+  .page-card .page-placeholder .ph-icon {
+    font-size: 40px;
+    opacity: 0.3;
+  }
+
+  .page-card .page-placeholder .ph-text {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 13px;
+    letter-spacing: 3px;
+    opacity: 0.4;
+  }
+
+  /* ── EMPTY STATE ── */
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 20px;
+    gap: 16px;
+    color: var(--grey-dim);
+    text-align: center;
+  }
+
+  .empty-icon {
+    font-size: 64px;
+    opacity: 0.2;
+  }
+
+  .empty-text {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 18px;
+    letter-spacing: 3px;
+    opacity: 0.4;
+  }
+
+  /* ── BACK TO TOP ── */
+  .back-top {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    background: linear-gradient(135deg, var(--red), var(--orange));
+    border: none;
+    color: var(--white);
+    font-family: 'Bebas Neue', cursive;
+    font-size: 13px;
+    letter-spacing: 2px;
+    padding: 10px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+    box-shadow: 0 4px 20px rgba(192,57,43,0.4);
+    z-index: 200;
+  }
+
+  .back-top.visible {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--dark); }
+  ::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 3px; }
+
+  /* ── MOBILE ── */
+  @media (max-width: 640px) {
+    .sidebar { display: none; }
+    .site-title { font-size: 22px; }
+    .jump-bar label { display: none; }
+    .reader { padding: 24px 12px 60px; }
+    .chapter-number { font-size: 38px; }
+  }
+
+  /* ── FADE IN ANIMATION ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .chapter-section {
+    animation: fadeUp 0.4s ease both;
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════
+     MANGA DATA — EDIT THIS SECTION ONLY
+     Add your chapters and pages here.
+     File paths are relative to index.html
+══════════════════════════════════════ -->
+<script>
+const MANGA = {
+  title: "VOIDBORNE",
+  subtitle: "Chronicles of the Shattered Sky",
+  chapters: [
+
+    {
+      pages: [
+        "pages/pg1.png",
+        "pages/pg2.png",
+        "pages/pg3.png",
+        "pages/pg4.png",
+        "pages/pg5.png",
+        "pages/pg6.png",
+        "pages/pg7.png",
+        "pages/pg8.png",
+        "pages/pg9.png",
+      ]
+    },
+
+    {
+      pages: [
+        "pages/pg10.png",
+        "pages/pg11.png",
+        "pages/pg12.png",
+      ]
+    },
+
+    /* ── ADD MORE CHAPTERS BELOW ──
+    {
+      pages: [
+        "pages/pg13.png",
+        "pages/pg14.png",
+      ]
+    },
+    ── END TEMPLATE ── */
+
+  ]
+};
+</script>
+<!-- ══════════════════════════════════════
+     END OF MANGA DATA
+══════════════════════════════════════ -->
+
+
+<!-- HEADER -->
+<header>
+  <a class="logo-area" href="#">
+    <img class="logo-img" src="logo.png" alt="Blaze Manga Logo">
+    <span class="site-title">BLAZE MANGA</span>
+  </a>
+
+  <div class="jump-bar">
+    <label>JUMP TO CH.</label>
+    <input
+      type="number"
+      id="jump-input"
+      min="1"
+      placeholder="01"
+      title="Enter chapter number"
+    >
+    <button class="jump-btn" onclick="jumpToChapter()">GO</button>
+  </div>
+</header>
+
+
+<!-- LAYOUT -->
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-heading">CHAPTERS</div>
+    <!-- Populated by JS -->
+  </nav>
+
+  <!-- READER -->
+  <main class="reader" id="reader">
+    <!-- Populated by JS -->
+  </main>
+
+</div>
+
+<!-- BACK TO TOP -->
+<button class="back-top" id="back-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+  ↑ TOP
+</button>
+
+
+<script>
+// ── BUILD THE PAGE ──────────────────────────────────────
+
+const sidebar = document.getElementById('sidebar');
+const reader  = document.getElementById('reader');
+const backTop = document.getElementById('back-top');
+
+function build() {
+  const chapters = MANGA.chapters;
+
+  if (!chapters || chapters.length === 0) {
+    reader.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">📖</div>
+        <div class="empty-text">No chapters added yet</div>
+      </div>`;
+    return;
+  }
+
+  chapters.forEach((chapter, ci) => {
+    const chNum = ci + 1;
+
+    // ── SIDEBAR BUTTON ──
+    const btn = document.createElement('button');
+    btn.className = 'chapter-btn';
+    btn.id = `sidebar-ch-${chNum}`;
+    btn.innerHTML = `
+      <span class="ch-num">${String(chNum).padStart(2,'0')}</span>
+      Chapter ${chNum}
+      <span class="pg-count">${chapter.pages.length}p</span>
+    `;
+    btn.onclick = () => scrollToChapter(chNum);
+    sidebar.appendChild(btn);
+
+    // ── CHAPTER SECTION ──
+    const section = document.createElement('div');
+    section.className = 'chapter-section';
+    section.id = `chapter-${chNum}`;
+    section.innerHTML = `
+      <div class="chapter-divider">
+        <span class="chapter-number">${String(chNum).padStart(2,'0')}</span>
+        <div class="chapter-divider-line"></div>
+        <span class="chapter-flame">🔥</span>
+      </div>
+    `;
+
+    // ── PAGES ──
+    chapter.pages.forEach((src, pi) => {
+      const pageNum = pi + 1;
+      const card = document.createElement('div');
+      card.className = 'page-card';
+
+      const label = document.createElement('div');
+      label.className = 'page-label';
+      label.textContent = `P.${pageNum}`;
+
+      const img = document.createElement('img');
+      img.alt = `Chapter ${chNum} Page ${pageNum}`;
+      img.loading = 'lazy';
+
+      // Show placeholder if image fails to load
+      img.onerror = function() {
+        const ph = document.createElement('div');
+        ph.className = 'page-placeholder';
+        ph.innerHTML = `
+          <div class="ph-icon">🖼️</div>
+          <div class="ph-text">CH.${chNum} · PAGE ${pageNum}</div>
+          <div class="ph-text" style="font-size:10px;opacity:0.3">${src}</div>
+        `;
+        card.replaceChild(ph, img);
+      };
+
+      img.src = src;
+
+      card.appendChild(label);
+      card.appendChild(img);
+      section.appendChild(card);
+    });
+
+    reader.appendChild(section);
+  });
+
+  // Highlight active chapter on scroll
+  observeChapters();
+}
+
+
+// ── SCROLL TO CHAPTER ──────────────────────────────────
+
+function scrollToChapter(num) {
+  const el = document.getElementById(`chapter-${num}`);
+  if (!el) return;
+  const offset = 64 + 16; // header height + gap
+  const top = el.getBoundingClientRect().top + window.scrollY - offset;
+  window.scrollTo({ top, behavior: 'smooth' });
+}
+
+
+// ── JUMP INPUT ─────────────────────────────────────────
+
+function jumpToChapter() {
+  const val = parseInt(document.getElementById('jump-input').value);
+  if (isNaN(val) || val < 1) return;
+  if (val > MANGA.chapters.length) {
+    alert(`Only ${MANGA.chapters.length} chapter(s) available.`);
+    return;
+  }
+  scrollToChapter(val);
+}
+
+document.getElementById('jump-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') jumpToChapter();
+});
+
+
+// ── INTERSECTION OBSERVER (active chapter highlight) ───
+
+function observeChapters() {
+  const options = {
+    root: null,
+    rootMargin: '-20% 0px -60% 0px',
+    threshold: 0
+  };
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id; // chapter-N
+        const num = id.split('-')[1];
+        document.querySelectorAll('.chapter-btn').forEach(b => b.classList.remove('active'));
+        const activeBtn = document.getElementById(`sidebar-ch-${num}`);
+        if (activeBtn) {
+          activeBtn.classList.add('active');
+          // Scroll sidebar to active button
+          activeBtn.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        }
+      }
+    });
+  }, options);
+
+  document.querySelectorAll('.chapter-section').forEach(s => observer.observe(s));
+}
+
+
+// ── BACK TO TOP VISIBILITY ─────────────────────────────
+
+window.addEventListener('scroll', () => {
+  if (window.scrollY > 400) {
+    backTop.classList.add('visible');
+  } else {
+    backTop.classList.remove('visible');
+  }
+}, { passive: true });
+
+
+// ── INIT ───────────────────────────────────────────────
+build();
+</script>
+
+</body>
+</html>
