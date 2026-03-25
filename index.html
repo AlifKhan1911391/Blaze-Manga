@@ -116,19 +116,27 @@
     }
     .social-link {
       margin-left: auto;
+      display: flex;
+      align-items: center;
     }
     .social-link a {
-      color: var(--muted);
-      text-decoration: none;
-      font-size: 13px;
-      font-weight: 500;
-      transition: color 0.15s;
       display: flex;
       align-items: center;
       gap: 6px;
+      text-decoration: none;
+      transition: opacity 0.15s;
     }
     .social-link a:hover {
-      color: var(--gold);
+      opacity: 0.8;
+    }
+    .social-link svg {
+      width: 22px;
+      height: 22px;
+      fill: var(--muted);
+      transition: fill 0.15s;
+    }
+    .social-link a:hover svg {
+      fill: var(--gold);
     }
     .layout {
       display: flex;
@@ -209,27 +217,21 @@
     }
     .ch-header {
       display: flex;
-      align-items: center;
-      gap: 14px;
-      margin-bottom: 16px;
+      justify-content: center;
+      margin-bottom: 24px;
       padding-bottom: 12px;
       border-bottom: 1px solid var(--border);
     }
     .ch-badge {
       font-family: 'Bebas Neue', cursive;
-      font-size: 13px;
-      letter-spacing: 3px;
+      font-size: 24px;
+      letter-spacing: 4px;
       color: var(--red);
       background: rgba(184,50,34,0.1);
       border: 1px solid rgba(184,50,34,0.25);
-      padding: 3px 10px;
-      border-radius: 2px;
-    }
-    .ch-pg-count {
-      margin-left: auto;
-      font-size: 11px;
-      color: var(--muted);
-      letter-spacing: 1px;
+      padding: 6px 18px;
+      border-radius: 4px;
+      display: inline-block;
     }
     .page-wrap {
       position: relative;
@@ -242,20 +244,6 @@
     .page-wrap img {
       width: 100%;
       display: block;
-    }
-    .page-num {
-      position: absolute;
-      bottom: 10px;
-      right: 10px;
-      background: rgba(14,14,14,0.75);
-      color: var(--muted);
-      font-size: 10px;
-      font-weight: 600;
-      letter-spacing: 1px;
-      padding: 2px 7px;
-      border-radius: 2px;
-      backdrop-filter: blur(4px);
-      pointer-events: none;
     }
     .page-placeholder {
       width: 100%;
@@ -305,31 +293,6 @@
       opacity: 0.3;
       cursor: not-allowed;
     }
-    #back-top {
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 3px;
-      color: var(--muted);
-      font-family: 'Bebas Neue', cursive;
-      font-size: 12px;
-      letter-spacing: 2px;
-      padding: 8px 14px;
-      cursor: pointer;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.2s, color 0.15s;
-      z-index: 99;
-    }
-    #back-top.show {
-      opacity: 1;
-      pointer-events: all;
-    }
-    #back-top:hover {
-      color: var(--white);
-    }
     ::-webkit-scrollbar {
       width: 4px;
     }
@@ -357,6 +320,10 @@
       .social-link {
         margin-left: 0;
       }
+      .ch-badge {
+        font-size: 20px;
+        padding: 4px 14px;
+      }
     }
   </style>
 </head>
@@ -375,7 +342,9 @@
   </div>
   <div class="social-link">
     <a href="https://www.instagram.com/myblaze_manga?igsh=Z24waDVtMDFkdnh6" target="_blank" rel="noopener noreferrer">
-      📷 Instagram
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.366.062 2.633.336 3.608 1.311.975.975 1.249 2.242 1.311 3.608.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.062 1.366-.336 2.633-1.311 3.608-.975.975-2.242 1.249-3.608 1.311-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-1.366-.062-2.633-.336-3.608-1.311-.975-.975-1.249-2.242-1.311-3.608-.058-1.266-.07-1.646-.07-4.85s.012-3.584.07-4.85c.062-1.366.336-2.633 1.311-3.608.975-.975 2.242-1.249 3.608-1.311 1.266-.058 1.646-.07 4.85-.07zM12 0C8.741 0 8.332.014 7.052.072 5.775.13 4.513.403 3.458 1.458 2.403 2.513 2.13 3.775 2.072 5.052 2.014 6.332 2 6.741 2 10s.014 3.668.072 4.948c.058 1.277.331 2.539 1.386 3.594 1.055 1.055 2.317 1.328 3.594 1.386 1.28.058 1.689.072 4.948.072s3.668-.014 4.948-.072c1.277-.058 2.539-.331 3.594-1.386 1.055-1.055 1.328-2.317 1.386-3.594.058-1.28.072-1.689.072-4.948s-.014-3.668-.072-4.948c-.058-1.277-.331-2.539-1.386-3.594-1.055-1.055-2.317-1.328-3.594-1.386C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.88 1.44 1.44 0 000-2.88z"/>
+      </svg>
     </a>
   </div>
 </header>
@@ -384,8 +353,6 @@
   <aside id="sidebar"></aside>
   <main id="main"></main>
 </div>
-
-<button id="back-top" onclick="scrollTo({top:0,behavior:'smooth'})">↑ TOP</button>
 
 <!-- Import manga data from external file -->
 <script src="manga-data.js"></script>
@@ -402,14 +369,12 @@
 
       const sidebar = document.getElementById('sidebar');
       const main = document.getElementById('main');
-      const backTop = document.getElementById('back-top');
       const jumpInput = document.getElementById('jump-input');
       const jumpButton = document.getElementById('jump-button');
       const headerHeight = 56;
 
-      let currentChapter = 1; // 1-indexed
+      let currentChapter = 1;
 
-      // Build the sidebar with all chapter links (but no content)
       function buildSidebar() {
         sidebar.innerHTML = '';
         const lbl = document.createElement('span');
@@ -431,7 +396,6 @@
         updateActiveSidebar();
       }
 
-      // Update active class in sidebar
       function updateActiveSidebar() {
         document.querySelectorAll('.ch-link').forEach(btn => {
           btn.classList.remove('active');
@@ -440,7 +404,6 @@
         if (activeBtn) activeBtn.classList.add('active');
       }
 
-      // Load a specific chapter (replaces main content)
       function loadChapter(chapterNum) {
         if (chapterNum < 1 || chapterNum > MANGA.length) return;
 
@@ -450,27 +413,23 @@
         const chapter = MANGA[chapterNum - 1];
         if (!chapter) return;
 
-        // Build chapter block
         const block = document.createElement('div');
         block.className = 'ch-block';
         block.id = `ch-${chapterNum}`;
 
-        // Chapter header (only badge + page count)
+        // Centered enlarged badge (no page count)
         block.innerHTML = `
           <div class="ch-header">
-            <span class="ch-badge">CH. ${String(chapterNum).padStart(2,'0')}</span>
-            <span class="ch-pg-count">${chapter.pages.length} PAGES</span>
+            <div class="ch-badge">CH. ${String(chapterNum).padStart(2,'0')}</div>
           </div>
         `;
 
-        // Add pages
         chapter.pages.forEach((file, pageIdx) => {
           const pageNum = pageIdx + 1;
           const wrap = document.createElement('div');
           wrap.className = 'page-wrap';
 
           const img = document.createElement('img');
-          // Error handler before setting src
           img.onerror = function() {
             wrap.innerHTML = '';
             const placeholder = document.createElement('div');
@@ -481,38 +440,26 @@
                 <path d="M3 9l4-4 4 4 4-4 4 4"/>
                 <circle cx="8.5" cy="14" r="1.5"/>
               </svg>
-              <span>PAGE ${pageNum} / ${chapter.pages.length}</span>
+              <span>PAGE ${pageNum}</span>
             `;
-            const pageLabel = document.createElement('div');
-            pageLabel.className = 'page-num';
-            pageLabel.textContent = `${pageNum} / ${chapter.pages.length}`;
             wrap.appendChild(placeholder);
-            wrap.appendChild(pageLabel);
           };
           img.src = PAGES_FOLDER + file;
           img.alt = `Ch${chapterNum} P${pageNum}`;
           img.loading = 'lazy';
 
-          const label = document.createElement('div');
-          label.className = 'page-num';
-          label.textContent = `${pageNum} / ${chapter.pages.length}`;
-
           wrap.appendChild(img);
-          wrap.appendChild(label);
           block.appendChild(wrap);
         });
 
-        // Add navigation buttons container
         const navContainer = document.createElement('div');
         navContainer.className = 'nav-buttons';
         navContainer.id = 'nav-buttons';
         block.appendChild(navContainer);
 
-        // Replace main content and scroll to top
         main.innerHTML = '';
         main.appendChild(block);
 
-        // Scroll to top of chapter (with slight delay for DOM update)
         setTimeout(() => {
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }, 20);
@@ -520,7 +467,6 @@
         updateNavButtons();
       }
 
-      // Create or update next/prev buttons based on currentChapter
       function updateNavButtons() {
         const navContainer = document.getElementById('nav-buttons');
         if (!navContainer) return;
@@ -545,7 +491,6 @@
         navContainer.appendChild(nextBtn);
       }
 
-      // Jump to chapter from input
       function jumpChapter() {
         const val = parseInt(jumpInput.value, 10);
         if (isNaN(val) || val < 1) return;
@@ -556,20 +501,13 @@
         loadChapter(val);
       }
 
-      // Back to top visibility
-      function handleScroll() {
-        backTop.classList.toggle('show', window.scrollY > 500);
-      }
-
-      // Initial load
       function init() {
         buildSidebar();
-        loadChapter(1); // start with first chapter
+        loadChapter(1);
         jumpButton.addEventListener('click', jumpChapter);
         jumpInput.addEventListener('keydown', e => {
           if (e.key === 'Enter') jumpChapter();
         });
-        window.addEventListener('scroll', handleScroll, { passive: true });
       }
 
       init();
