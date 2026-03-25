@@ -43,6 +43,7 @@
       align-items: center;
       padding: 0 28px;
       gap: 20px;
+      flex-wrap: wrap;
     }
     .logo-wrap {
       display: flex;
@@ -112,6 +113,22 @@
     }
     .jump-wrap button:hover {
       opacity: 0.8;
+    }
+    .social-link {
+      margin-left: auto;
+    }
+    .social-link a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      transition: color 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .social-link a:hover {
+      color: var(--gold);
     }
     .layout {
       display: flex;
@@ -208,12 +225,6 @@
       padding: 3px 10px;
       border-radius: 2px;
     }
-    .ch-label {
-      font-family: 'Bebas Neue', cursive;
-      font-size: 18px;
-      letter-spacing: 2px;
-      color: var(--white);
-    }
     .ch-pg-count {
       margin-left: auto;
       font-size: 11px;
@@ -266,6 +277,34 @@
       opacity: 0.3;
       font-family: 'Bebas Neue', cursive;
     }
+    .nav-buttons {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      margin-top: 20px;
+      margin-bottom: 40px;
+    }
+    .nav-buttons button {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      color: var(--white);
+      font-family: 'Bebas Neue', cursive;
+      font-size: 13px;
+      letter-spacing: 2px;
+      padding: 8px 24px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .nav-buttons button:hover:not(:disabled) {
+      background: var(--gold-dim);
+      border-color: var(--gold);
+      color: var(--white);
+    }
+    .nav-buttons button:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
     #back-top {
       position: fixed;
       bottom: 24px;
@@ -315,6 +354,9 @@
       .jump-wrap span {
         display: none;
       }
+      .social-link {
+        margin-left: 0;
+      }
     }
   </style>
 </head>
@@ -331,6 +373,11 @@
     <input type="number" id="jump-input" min="1" placeholder="1" title="Jump to chapter">
     <button id="jump-button">GO</button>
   </div>
+  <div class="social-link">
+    <a href="https://www.instagram.com/myblaze_manga?igsh=Z24waDVtMDFkdnh6" target="_blank" rel="noopener noreferrer">
+      📷 Instagram
+    </a>
+  </div>
 </header>
 
 <div class="layout">
@@ -346,9 +393,7 @@
 <!-- All UI building logic -->
 <script>
   (function() {
-    // Wait for DOM to be ready
     document.addEventListener('DOMContentLoaded', function() {
-      // Check if MANGA data exists
       if (typeof MANGA === 'undefined') {
         console.error('MANGA data not found. Make sure manga-data.js is loaded.');
         document.getElementById('main').innerHTML = '<div style="padding:80px 40px;color:#444;">ERROR: Manga data not loaded</div>';
@@ -362,100 +407,142 @@
       const jumpButton = document.getElementById('jump-button');
       const headerHeight = 56;
 
-      // Clear and rebuild everything
-      function build() {
+      let currentChapter = 1; // 1-indexed
+
+      // Build the sidebar with all chapter links (but no content)
+      function buildSidebar() {
         sidebar.innerHTML = '';
-        main.innerHTML = '';
-
-        if (!MANGA.length) {
-          main.innerHTML = `<div style="padding:80px 40px;color:#444;font-family:'Bebas Neue',cursive;letter-spacing:3px">NO CHAPTERS YET</div>`;
-          return;
-        }
-
-        // Sidebar header
         const lbl = document.createElement('span');
         lbl.className = 'sidebar-label';
         lbl.textContent = 'CHAPTERS';
         sidebar.appendChild(lbl);
 
-        // Loop through chapters
         MANGA.forEach((ch, idx) => {
           const chapterNum = idx + 1;
-
-          // Sidebar button
           const btn = document.createElement('button');
           btn.type = 'button';
           btn.className = 'ch-link';
           btn.id = `sb-${chapterNum}`;
           btn.innerHTML = `Chapter ${chapterNum}<span class="ch-pages">${ch.pages.length}p</span>`;
-          btn.onclick = () => gotoChapter(chapterNum);
+          btn.onclick = () => loadChapter(chapterNum);
           sidebar.appendChild(btn);
-
-          // Chapter block
-          const block = document.createElement('div');
-          block.className = 'ch-block';
-          block.id = `ch-${chapterNum}`;
-
-          // Chapter header
-          block.innerHTML = `
-            <div class="ch-header">
-              <span class="ch-badge">CH. ${String(chapterNum).padStart(2,'0')}</span>
-              <span class="ch-label">CHAPTER ${chapterNum}</span>
-              <span class="ch-pg-count">${ch.pages.length} PAGES</span>
-            </div>
-          `;
-
-          // Pages
-          ch.pages.forEach((file, pageIdx) => {
-            const pageNum = pageIdx + 1;
-            const wrap = document.createElement('div');
-            wrap.className = 'page-wrap';
-
-            const img = document.createElement('img');
-            // Set error handler BEFORE src
-            img.onerror = function() {
-              wrap.innerHTML = '';
-              const placeholder = document.createElement('div');
-              placeholder.className = 'page-placeholder';
-              placeholder.innerHTML = `
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="1.2">
-                  <rect x="3" y="3" width="18" height="18" rx="2"/>
-                  <path d="M3 9l4-4 4 4 4-4 4 4"/>
-                  <circle cx="8.5" cy="14" r="1.5"/>
-                </svg>
-                <span>PAGE ${pageNum} / ${ch.pages.length}</span>
-              `;
-              const pageLabel = document.createElement('div');
-              pageLabel.className = 'page-num';
-              pageLabel.textContent = `${pageNum} / ${ch.pages.length}`;
-              wrap.appendChild(placeholder);
-              wrap.appendChild(pageLabel);
-            };
-            img.src = PAGES_FOLDER + file;
-            img.alt = `Ch${chapterNum} P${pageNum}`;
-            img.loading = 'lazy';
-
-            const label = document.createElement('div');
-            label.className = 'page-num';
-            label.textContent = `${pageNum} / ${ch.pages.length}`;
-
-            wrap.appendChild(img);
-            wrap.appendChild(label);
-            block.appendChild(wrap);
-          });
-
-          main.appendChild(block);
         });
 
-        setupActiveChapterObserver();
+        updateActiveSidebar();
       }
 
-      // Scroll to specific chapter
-      function gotoChapter(num) {
-        const el = document.getElementById(`ch-${num}`);
-        if (!el) return;
-        const y = el.getBoundingClientRect().top + window.scrollY - headerHeight;
-        window.scrollTo({ top: y, behavior: 'smooth' });
+      // Update active class in sidebar
+      function updateActiveSidebar() {
+        document.querySelectorAll('.ch-link').forEach(btn => {
+          btn.classList.remove('active');
+        });
+        const activeBtn = document.getElementById(`sb-${currentChapter}`);
+        if (activeBtn) activeBtn.classList.add('active');
+      }
+
+      // Load a specific chapter (replaces main content)
+      function loadChapter(chapterNum) {
+        if (chapterNum < 1 || chapterNum > MANGA.length) return;
+
+        currentChapter = chapterNum;
+        updateActiveSidebar();
+
+        const chapter = MANGA[chapterNum - 1];
+        if (!chapter) return;
+
+        // Build chapter block
+        const block = document.createElement('div');
+        block.className = 'ch-block';
+        block.id = `ch-${chapterNum}`;
+
+        // Chapter header (only badge + page count)
+        block.innerHTML = `
+          <div class="ch-header">
+            <span class="ch-badge">CH. ${String(chapterNum).padStart(2,'0')}</span>
+            <span class="ch-pg-count">${chapter.pages.length} PAGES</span>
+          </div>
+        `;
+
+        // Add pages
+        chapter.pages.forEach((file, pageIdx) => {
+          const pageNum = pageIdx + 1;
+          const wrap = document.createElement('div');
+          wrap.className = 'page-wrap';
+
+          const img = document.createElement('img');
+          // Error handler before setting src
+          img.onerror = function() {
+            wrap.innerHTML = '';
+            const placeholder = document.createElement('div');
+            placeholder.className = 'page-placeholder';
+            placeholder.innerHTML = `
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="1.2">
+                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                <path d="M3 9l4-4 4 4 4-4 4 4"/>
+                <circle cx="8.5" cy="14" r="1.5"/>
+              </svg>
+              <span>PAGE ${pageNum} / ${chapter.pages.length}</span>
+            `;
+            const pageLabel = document.createElement('div');
+            pageLabel.className = 'page-num';
+            pageLabel.textContent = `${pageNum} / ${chapter.pages.length}`;
+            wrap.appendChild(placeholder);
+            wrap.appendChild(pageLabel);
+          };
+          img.src = PAGES_FOLDER + file;
+          img.alt = `Ch${chapterNum} P${pageNum}`;
+          img.loading = 'lazy';
+
+          const label = document.createElement('div');
+          label.className = 'page-num';
+          label.textContent = `${pageNum} / ${chapter.pages.length}`;
+
+          wrap.appendChild(img);
+          wrap.appendChild(label);
+          block.appendChild(wrap);
+        });
+
+        // Add navigation buttons container
+        const navContainer = document.createElement('div');
+        navContainer.className = 'nav-buttons';
+        navContainer.id = 'nav-buttons';
+        block.appendChild(navContainer);
+
+        // Replace main content and scroll to top
+        main.innerHTML = '';
+        main.appendChild(block);
+
+        // Scroll to top of chapter (with slight delay for DOM update)
+        setTimeout(() => {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }, 20);
+
+        updateNavButtons();
+      }
+
+      // Create or update next/prev buttons based on currentChapter
+      function updateNavButtons() {
+        const navContainer = document.getElementById('nav-buttons');
+        if (!navContainer) return;
+
+        navContainer.innerHTML = '';
+
+        const prevBtn = document.createElement('button');
+        prevBtn.textContent = '← PREVIOUS';
+        prevBtn.disabled = (currentChapter === 1);
+        prevBtn.onclick = () => {
+          if (currentChapter > 1) loadChapter(currentChapter - 1);
+        };
+
+        const nextBtn = document.createElement('button');
+        nextBtn.textContent = 'NEXT →';
+        nextBtn.disabled = (currentChapter === MANGA.length);
+        nextBtn.onclick = () => {
+          if (currentChapter < MANGA.length) loadChapter(currentChapter + 1);
+        };
+
+        navContainer.appendChild(prevBtn);
+        navContainer.appendChild(nextBtn);
       }
 
       // Jump to chapter from input
@@ -466,49 +553,26 @@
           alert(`Only ${MANGA.length} chapter(s) available.`);
           return;
         }
-        gotoChapter(val);
+        loadChapter(val);
       }
 
-      // Highlight active chapter in sidebar while scrolling
-      function setupActiveChapterObserver() {
-        if (window.activeChapterObserver) {
-          window.activeChapterObserver.disconnect();
-        }
-
-        const observer = new IntersectionObserver(entries => {
-          entries.forEach(entry => {
-            if (!entry.isIntersecting) return;
-
-            const chapterNum = entry.target.id.split('-')[1];
-            
-            document.querySelectorAll('.ch-link').forEach(btn => {
-              btn.classList.remove('active');
-            });
-            
-            const activeBtn = document.getElementById(`sb-${chapterNum}`);
-            if (activeBtn) activeBtn.classList.add('active');
-          });
-        }, {
-          rootMargin: '-20% 0px -30% 0px',
-          threshold: 0
-        });
-
-        document.querySelectorAll('.ch-block').forEach(block => observer.observe(block));
-        window.activeChapterObserver = observer;
-      }
-
-      // Back to top button visibility
+      // Back to top visibility
       function handleScroll() {
         backTop.classList.toggle('show', window.scrollY > 500);
       }
 
-      // Initialize everything
-      build();
-      jumpButton.addEventListener('click', jumpChapter);
-      jumpInput.addEventListener('keydown', e => {
-        if (e.key === 'Enter') jumpChapter();
-      });
-      window.addEventListener('scroll', handleScroll, { passive: true });
+      // Initial load
+      function init() {
+        buildSidebar();
+        loadChapter(1); // start with first chapter
+        jumpButton.addEventListener('click', jumpChapter);
+        jumpInput.addEventListener('keydown', e => {
+          if (e.key === 'Enter') jumpChapter();
+        });
+        window.addEventListener('scroll', handleScroll, { passive: true });
+      }
+
+      init();
     });
   })();
 </script>
