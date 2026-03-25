@@ -1,665 +1,516 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Blaze Manga</title>
-<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Bebas+Neue&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --black:      #080808;
-    --dark:       #111111;
-    --panel:      #161616;
-    --border:     #1e1e1e;
-    --gold:       #c9a227;
-    --gold-dim:   #7a6118;
-    --red:        #c0392b;
-    --orange:     #e05a1a;
-    --fire:       #e67e22;
-    --white:      #f0f0f0;
-    --grey:       #888888;
-    --grey-dim:   #444444;
-  }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  html { scroll-behavior: smooth; }
-
-  body {
-    background: var(--black);
-    color: var(--white);
-    font-family: 'Rajdhani', sans-serif;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-
-  /* ── NOISE TEXTURE OVERLAY ── */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-    pointer-events: none;
-    z-index: 9999;
-    opacity: 0.4;
-  }
-
-  /* ── HEADER ── */
-  header {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    background: var(--dark);
-    border-bottom: 2px solid var(--gold-dim);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 24px;
-    height: 64px;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.8);
-  }
-
-  .logo-area {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    text-decoration: none;
-  }
-
-  .logo-img {
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 1.5px solid var(--gold-dim);
-    box-shadow: 0 0 12px rgba(201,162,39,0.3);
-  }
-
-  .site-title {
-    font-family: 'Bangers', cursive;
-    font-size: 28px;
-    letter-spacing: 3px;
-    background: linear-gradient(135deg, var(--gold) 0%, var(--orange) 50%, var(--red) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-shadow: none;
-    line-height: 1;
-  }
-
-  /* ── JUMP BAR ── */
-  .jump-bar {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .jump-bar label {
-    font-family: 'Bebas Neue', cursive;
-    font-size: 14px;
-    letter-spacing: 2px;
-    color: var(--grey);
-  }
-
-  .jump-bar input {
-    width: 64px;
-    background: var(--panel);
-    border: 1.5px solid var(--gold-dim);
-    color: var(--white);
-    font-family: 'Bebas Neue', cursive;
-    font-size: 16px;
-    letter-spacing: 2px;
-    text-align: center;
-    padding: 6px 8px;
-    border-radius: 4px;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-
-  .jump-bar input:focus {
-    border-color: var(--gold);
-    box-shadow: 0 0 8px rgba(201,162,39,0.3);
-  }
-
-  .jump-btn {
-    background: linear-gradient(135deg, var(--red), var(--orange));
-    border: none;
-    color: var(--white);
-    font-family: 'Bebas Neue', cursive;
-    font-size: 14px;
-    letter-spacing: 2px;
-    padding: 7px 16px;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: opacity 0.2s, transform 0.1s;
-  }
-
-  .jump-btn:hover { opacity: 0.85; }
-  .jump-btn:active { transform: scale(0.97); }
-
-  /* ── LAYOUT ── */
-  .layout {
-    display: flex;
-    min-height: calc(100vh - 64px);
-  }
-
-  /* ── SIDEBAR ── */
-  .sidebar {
-    width: 220px;
-    min-width: 220px;
-    background: var(--dark);
-    border-right: 1px solid var(--border);
-    position: sticky;
-    top: 64px;
-    height: calc(100vh - 64px);
-    overflow-y: auto;
-    padding: 20px 0 40px;
-    scrollbar-width: thin;
-    scrollbar-color: var(--gold-dim) transparent;
-  }
-
-  .sidebar::-webkit-scrollbar { width: 4px; }
-  .sidebar::-webkit-scrollbar-track { background: transparent; }
-  .sidebar::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 2px; }
-
-  .sidebar-heading {
-    font-family: 'Bebas Neue', cursive;
-    font-size: 11px;
-    letter-spacing: 3px;
-    color: var(--grey-dim);
-    padding: 0 20px 12px;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 12px;
-  }
-
-  .chapter-btn {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    width: 100%;
-    background: none;
-    border: none;
-    border-left: 3px solid transparent;
-    color: var(--grey);
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 15px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    padding: 10px 20px;
-    text-align: left;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-
-  .chapter-btn:hover {
-    color: var(--white);
-    border-left-color: var(--gold-dim);
-    background: rgba(255,255,255,0.03);
-  }
-
-  .chapter-btn.active {
-    color: var(--gold);
-    border-left-color: var(--gold);
-    background: rgba(201,162,39,0.07);
-  }
-
-  .chapter-btn .ch-num {
-    font-family: 'Bebas Neue', cursive;
-    font-size: 18px;
-    color: var(--red);
-    min-width: 28px;
-    line-height: 1;
-  }
-
-  .chapter-btn.active .ch-num {
-    color: var(--gold);
-  }
-
-  .chapter-btn .pg-count {
-    margin-left: auto;
-    font-size: 11px;
-    color: var(--grey-dim);
-    font-weight: 400;
-  }
-
-  /* ── MAIN READER ── */
-  .reader {
-    flex: 1;
-    padding: 40px 20px 80px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0;
-  }
-
-  /* ── CHAPTER SECTION ── */
-  .chapter-section {
-    width: 100%;
-    max-width: 680px;
-    margin-bottom: 60px;
-  }
-
-  .chapter-divider {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    margin-bottom: 24px;
-    padding-bottom: 16px;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .chapter-number {
-    font-family: 'Bangers', cursive;
-    font-size: 52px;
-    line-height: 1;
-    background: linear-gradient(135deg, var(--red) 0%, var(--orange) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    letter-spacing: 2px;
-    min-width: 80px;
-  }
-
-  .chapter-divider-line {
-    flex: 1;
-    height: 1px;
-    background: linear-gradient(90deg, var(--red), transparent);
-  }
-
-  .chapter-flame {
-    font-size: 22px;
-    opacity: 0.6;
-  }
-
-  /* ── PAGE CARD ── */
-  .page-card {
-    width: 100%;
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    overflow: hidden;
-    margin-bottom: 4px;
-    position: relative;
-    transition: border-color 0.2s;
-  }
-
-  .page-card:hover {
-    border-color: var(--grey-dim);
-  }
-
-  .page-label {
-    position: absolute;
-    top: 12px;
-    left: 12px;
-    background: rgba(8,8,8,0.85);
-    border: 1px solid var(--gold-dim);
-    color: var(--gold);
-    font-family: 'Bebas Neue', cursive;
-    font-size: 12px;
-    letter-spacing: 2px;
-    padding: 3px 8px;
-    border-radius: 2px;
-    z-index: 2;
-    backdrop-filter: blur(4px);
-  }
-
-  .page-card img {
-    width: 100%;
-    display: block;
-    image-rendering: auto;
-  }
-
-  .page-card .page-placeholder {
-    width: 100%;
-    aspect-ratio: 828 / 1200;
-    background: var(--panel);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    color: var(--grey-dim);
-  }
-
-  .page-card .page-placeholder .ph-icon {
-    font-size: 40px;
-    opacity: 0.3;
-  }
-
-  .page-card .page-placeholder .ph-text {
-    font-family: 'Bebas Neue', cursive;
-    font-size: 13px;
-    letter-spacing: 3px;
-    opacity: 0.4;
-  }
-
-  /* ── EMPTY STATE ── */
-  .empty-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 80px 20px;
-    gap: 16px;
-    color: var(--grey-dim);
-    text-align: center;
-  }
-
-  .empty-icon {
-    font-size: 64px;
-    opacity: 0.2;
-  }
-
-  .empty-text {
-    font-family: 'Bebas Neue', cursive;
-    font-size: 18px;
-    letter-spacing: 3px;
-    opacity: 0.4;
-  }
-
-  /* ── BACK TO TOP ── */
-  .back-top {
-    position: fixed;
-    bottom: 28px;
-    right: 28px;
-    background: linear-gradient(135deg, var(--red), var(--orange));
-    border: none;
-    color: var(--white);
-    font-family: 'Bebas Neue', cursive;
-    font-size: 13px;
-    letter-spacing: 2px;
-    padding: 10px 16px;
-    border-radius: 4px;
-    cursor: pointer;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s;
-    box-shadow: 0 4px 20px rgba(192,57,43,0.4);
-    z-index: 200;
-  }
-
-  .back-top.visible {
-    opacity: 1;
-    pointer-events: all;
-  }
-
-  /* ── SCROLLBAR ── */
-  ::-webkit-scrollbar { width: 6px; }
-  ::-webkit-scrollbar-track { background: var(--dark); }
-  ::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 3px; }
-
-  /* ── MOBILE ── */
-  @media (max-width: 640px) {
-    .sidebar { display: none; }
-    .site-title { font-size: 22px; }
-    .jump-bar label { display: none; }
-    .reader { padding: 24px 12px 60px; }
-    .chapter-number { font-size: 38px; }
-  }
-
-  /* ── FADE IN ANIMATION ── */
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(16px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  .chapter-section {
-    animation: fadeUp 0.4s ease both;
-  }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blaze Manga</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0e0e0e;
+      --surface: #161616;
+      --border: #242424;
+      --gold: #c9a227;
+      --gold-dim: #6b551a;
+      --red: #b83222;
+      --white: #eeeeee;
+      --muted: #666666;
+      --faint: #2a2a2a;
+    }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html {
+      scroll-behavior: smooth;
+    }
+    body {
+      background: var(--bg);
+      color: var(--white);
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      height: 56px;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      gap: 20px;
+    }
+    .logo-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      flex-shrink: 0;
+    }
+    .logo-wrap img {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1px solid var(--gold-dim);
+    }
+    .logo-wrap span {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 22px;
+      letter-spacing: 3px;
+      color: var(--gold);
+    }
+    .header-divider {
+      width: 1px;
+      height: 24px;
+      background: var(--border);
+      flex-shrink: 0;
+    }
+    .jump-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .jump-wrap span {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 13px;
+      letter-spacing: 2px;
+      color: var(--muted);
+    }
+    .jump-wrap input {
+      width: 56px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      color: var(--white);
+      font-family: 'Bebas Neue', cursive;
+      font-size: 15px;
+      letter-spacing: 1px;
+      text-align: center;
+      padding: 5px 6px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .jump-wrap input:focus {
+      border-color: var(--gold-dim);
+    }
+    .jump-wrap button {
+      background: var(--red);
+      border: none;
+      border-radius: 3px;
+      color: var(--white);
+      font-family: 'Bebas Neue', cursive;
+      font-size: 13px;
+      letter-spacing: 2px;
+      padding: 6px 14px;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .jump-wrap button:hover {
+      opacity: 0.8;
+    }
+    .layout {
+      display: flex;
+    }
+    aside {
+      width: 200px;
+      min-width: 200px;
+      position: sticky;
+      top: 56px;
+      height: calc(100vh - 56px);
+      overflow-y: auto;
+      border-right: 1px solid var(--border);
+      padding: 20px 0;
+      scrollbar-width: thin;
+      scrollbar-color: var(--faint) transparent;
+    }
+    aside::-webkit-scrollbar {
+      width: 3px;
+    }
+    aside::-webkit-scrollbar-thumb {
+      background: var(--faint);
+    }
+    .sidebar-label {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 10px;
+      letter-spacing: 3px;
+      color: var(--muted);
+      padding: 0 18px 10px;
+      display: block;
+    }
+    .ch-link {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      background: none;
+      border: none;
+      border-left: 2px solid transparent;
+      padding: 9px 18px;
+      color: var(--muted);
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      text-align: left;
+      cursor: pointer;
+      transition: color 0.15s, border-color 0.15s, background 0.15s;
+    }
+    .ch-link:hover {
+      color: var(--white);
+      background: var(--faint);
+    }
+    .ch-link.active {
+      color: var(--gold);
+      border-left-color: var(--gold);
+      background: rgba(201,162,39,0.05);
+    }
+    .ch-link .ch-pages {
+      font-size: 11px;
+      color: var(--faint);
+      font-weight: 400;
+    }
+    .ch-link.active .ch-pages {
+      color: var(--gold-dim);
+    }
+    main {
+      flex: 1;
+      min-width: 0;
+      padding: 40px 0 100px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .ch-block {
+      width: 100%;
+      max-width: 600px;
+      margin-bottom: 56px;
+      padding: 0 16px;
+    }
+    .ch-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .ch-badge {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 13px;
+      letter-spacing: 3px;
+      color: var(--red);
+      background: rgba(184,50,34,0.1);
+      border: 1px solid rgba(184,50,34,0.25);
+      padding: 3px 10px;
+      border-radius: 2px;
+    }
+    .ch-label {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 18px;
+      letter-spacing: 2px;
+      color: var(--white);
+    }
+    .ch-pg-count {
+      margin-left: auto;
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 1px;
+    }
+    .page-wrap {
+      position: relative;
+      width: 100%;
+      margin-bottom: 3px;
+      background: var(--surface);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .page-wrap img {
+      width: 100%;
+      display: block;
+    }
+    .page-num {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      background: rgba(14,14,14,0.75);
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      padding: 2px 7px;
+      border-radius: 2px;
+      backdrop-filter: blur(4px);
+      pointer-events: none;
+    }
+    .page-placeholder {
+      width: 100%;
+      aspect-ratio: 828 / 1200;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: var(--surface);
+    }
+    .page-placeholder svg {
+      opacity: 0.15;
+    }
+    .page-placeholder span {
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: var(--muted);
+      opacity: 0.3;
+      font-family: 'Bebas Neue', cursive;
+    }
+    #back-top {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      color: var(--muted);
+      font-family: 'Bebas Neue', cursive;
+      font-size: 12px;
+      letter-spacing: 2px;
+      padding: 8px 14px;
+      cursor: pointer;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s, color 0.15s;
+      z-index: 99;
+    }
+    #back-top.show {
+      opacity: 1;
+      pointer-events: all;
+    }
+    #back-top:hover {
+      color: var(--white);
+    }
+    ::-webkit-scrollbar {
+      width: 4px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--faint);
+      border-radius: 2px;
+    }
+    @media (max-width: 600px) {
+      aside {
+        display: none;
+      }
+      header {
+        padding: 0 16px;
+        gap: 12px;
+      }
+      .ch-block {
+        padding: 0 10px;
+      }
+      .jump-wrap span {
+        display: none;
+      }
+    }
+  </style>
 </head>
 <body>
 
-<!-- ══════════════════════════════════════
-     MANGA DATA — EDIT THIS SECTION ONLY
-     Add your chapters and pages here.
-     File paths are relative to index.html
-══════════════════════════════════════ -->
-<script>
-const MANGA = {
-  title: "VOIDBORNE",
-  subtitle: "Chronicles of the Shattered Sky",
-  chapters: [
-
-    {
-      pages: [
-        "pages/pg1.png",
-        "pages/pg2.png",
-        "pages/pg3.png",
-        "pages/pg4.png",
-        "pages/pg5.png",
-        "pages/pg6.png",
-        "pages/pg7.png",
-        "pages/pg8.png",
-        "pages/pg9.png",
-      ]
-    },
-
-    {
-      pages: [
-        "pages/pg10.png",
-        "pages/pg11.png",
-        "pages/pg12.png",
-      ]
-    },
-
-    /* ── ADD MORE CHAPTERS BELOW ──
-    {
-      pages: [
-        "pages/pg13.png",
-        "pages/pg14.png",
-      ]
-    },
-    ── END TEMPLATE ── */
-
-  ]
-};
-</script>
-<!-- ══════════════════════════════════════
-     END OF MANGA DATA
-══════════════════════════════════════ -->
-
-
-<!-- HEADER -->
 <header>
-  <a class="logo-area" href="#">
-    <img class="logo-img" src="1774179327064.png" alt="Blaze Manga Logo">
-    <span class="site-title">BLAZE MANGA</span>
+  <a class="logo-wrap" href="#">
+    <img src="1774179327064.png" alt="Blaze Manga">
+    <span>BLAZE MANGA</span>
   </a>
-
-  <div class="jump-bar">
-    <label>JUMP TO CH.</label>
-    <input
-      type="number"
-      id="jump-input"
-      min="1"
-      placeholder="01"
-      title="Enter chapter number"
-    >
-    <button class="jump-btn" onclick="jumpToChapter()">GO</button>
+  <div class="header-divider"></div>
+  <div class="jump-wrap">
+    <span>CHAPTER</span>
+    <input type="number" id="jump-input" min="1" placeholder="1" title="Jump to chapter">
+    <button id="jump-button">GO</button>
   </div>
 </header>
 
-
-<!-- LAYOUT -->
 <div class="layout">
-
-  <!-- SIDEBAR -->
-  <nav class="sidebar" id="sidebar">
-    <div class="sidebar-heading">CHAPTERS</div>
-    <!-- Populated by JS -->
-  </nav>
-
-  <!-- READER -->
-  <main class="reader" id="reader">
-    <!-- Populated by JS -->
-  </main>
-
+  <aside id="sidebar"></aside>
+  <main id="main"></main>
 </div>
 
-<!-- BACK TO TOP -->
-<button class="back-top" id="back-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">
-  ↑ TOP
-</button>
+<button id="back-top" onclick="scrollTo({top:0,behavior:'smooth'})">↑ TOP</button>
 
+<!-- Import manga data from external file -->
+<script src="manga-data.js"></script>
 
+<!-- All UI building logic -->
 <script>
-// ── BUILD THE PAGE ──────────────────────────────────────
-
-const sidebar = document.getElementById('sidebar');
-const reader  = document.getElementById('reader');
-const backTop = document.getElementById('back-top');
-
-function build() {
-  const chapters = MANGA.chapters;
-
-  if (!chapters || chapters.length === 0) {
-    reader.innerHTML = `
-      <div class="empty-state">
-        <div class="empty-icon">📖</div>
-        <div class="empty-text">No chapters added yet</div>
-      </div>`;
-    return;
-  }
-
-  chapters.forEach((chapter, ci) => {
-    const chNum = ci + 1;
-
-    // ── SIDEBAR BUTTON ──
-    const btn = document.createElement('button');
-    btn.className = 'chapter-btn';
-    btn.id = `sidebar-ch-${chNum}`;
-    btn.innerHTML = `
-      <span class="ch-num">${String(chNum).padStart(2,'0')}</span>
-      Chapter ${chNum}
-      <span class="pg-count">${chapter.pages.length}p</span>
-    `;
-    btn.onclick = () => scrollToChapter(chNum);
-    sidebar.appendChild(btn);
-
-    // ── CHAPTER SECTION ──
-    const section = document.createElement('div');
-    section.className = 'chapter-section';
-    section.id = `chapter-${chNum}`;
-    section.innerHTML = `
-      <div class="chapter-divider">
-        <span class="chapter-number">${String(chNum).padStart(2,'0')}</span>
-        <div class="chapter-divider-line"></div>
-        <span class="chapter-flame">🔥</span>
-      </div>
-    `;
-
-    // ── PAGES ──
-    chapter.pages.forEach((src, pi) => {
-      const pageNum = pi + 1;
-      const card = document.createElement('div');
-      card.className = 'page-card';
-
-      const label = document.createElement('div');
-      label.className = 'page-label';
-      label.textContent = `P.${pageNum}`;
-
-      const img = document.createElement('img');
-      img.alt = `Chapter ${chNum} Page ${pageNum}`;
-      img.loading = 'lazy';
-
-      // Show placeholder if image fails to load
-      img.onerror = function() {
-        const ph = document.createElement('div');
-        ph.className = 'page-placeholder';
-        ph.innerHTML = `
-          <div class="ph-icon">🖼️</div>
-          <div class="ph-text">CH.${chNum} · PAGE ${pageNum}</div>
-          <div class="ph-text" style="font-size:10px;opacity:0.3">${src}</div>
-        `;
-        card.replaceChild(ph, img);
-      };
-
-      img.src = src;
-
-      card.appendChild(label);
-      card.appendChild(img);
-      section.appendChild(card);
-    });
-
-    reader.appendChild(section);
-  });
-
-  // Highlight active chapter on scroll
-  observeChapters();
-}
-
-
-// ── SCROLL TO CHAPTER ──────────────────────────────────
-
-function scrollToChapter(num) {
-  const el = document.getElementById(`chapter-${num}`);
-  if (!el) return;
-  const offset = 64 + 16; // header height + gap
-  const top = el.getBoundingClientRect().top + window.scrollY - offset;
-  window.scrollTo({ top, behavior: 'smooth' });
-}
-
-
-// ── JUMP INPUT ─────────────────────────────────────────
-
-function jumpToChapter() {
-  const val = parseInt(document.getElementById('jump-input').value);
-  if (isNaN(val) || val < 1) return;
-  if (val > MANGA.chapters.length) {
-    alert(`Only ${MANGA.chapters.length} chapter(s) available.`);
-    return;
-  }
-  scrollToChapter(val);
-}
-
-document.getElementById('jump-input').addEventListener('keydown', e => {
-  if (e.key === 'Enter') jumpToChapter();
-});
-
-
-// ── INTERSECTION OBSERVER (active chapter highlight) ───
-
-function observeChapters() {
-  const options = {
-    root: null,
-    rootMargin: '-20% 0px -60% 0px',
-    threshold: 0
-  };
-
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        const id = entry.target.id; // chapter-N
-        const num = id.split('-')[1];
-        document.querySelectorAll('.chapter-btn').forEach(b => b.classList.remove('active'));
-        const activeBtn = document.getElementById(`sidebar-ch-${num}`);
-        if (activeBtn) {
-          activeBtn.classList.add('active');
-          // Scroll sidebar to active button
-          activeBtn.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-        }
+  (function() {
+    // Wait for DOM to be ready
+    document.addEventListener('DOMContentLoaded', function() {
+      // Check if MANGA data exists
+      if (typeof MANGA === 'undefined') {
+        console.error('MANGA data not found. Make sure manga-data.js is loaded.');
+        document.getElementById('main').innerHTML = '<div style="padding:80px 40px;color:#444;">ERROR: Manga data not loaded</div>';
+        return;
       }
+
+      const sidebar = document.getElementById('sidebar');
+      const main = document.getElementById('main');
+      const backTop = document.getElementById('back-top');
+      const jumpInput = document.getElementById('jump-input');
+      const jumpButton = document.getElementById('jump-button');
+      const headerHeight = 56;
+
+      // Clear and rebuild everything
+      function build() {
+        sidebar.innerHTML = '';
+        main.innerHTML = '';
+
+        if (!MANGA.length) {
+          main.innerHTML = `<div style="padding:80px 40px;color:#444;font-family:'Bebas Neue',cursive;letter-spacing:3px">NO CHAPTERS YET</div>`;
+          return;
+        }
+
+        // Sidebar header
+        const lbl = document.createElement('span');
+        lbl.className = 'sidebar-label';
+        lbl.textContent = 'CHAPTERS';
+        sidebar.appendChild(lbl);
+
+        // Loop through chapters
+        MANGA.forEach((ch, idx) => {
+          const chapterNum = idx + 1;
+
+          // Sidebar button
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'ch-link';
+          btn.id = `sb-${chapterNum}`;
+          btn.innerHTML = `Chapter ${chapterNum}<span class="ch-pages">${ch.pages.length}p</span>`;
+          btn.onclick = () => gotoChapter(chapterNum);
+          sidebar.appendChild(btn);
+
+          // Chapter block
+          const block = document.createElement('div');
+          block.className = 'ch-block';
+          block.id = `ch-${chapterNum}`;
+
+          // Chapter header
+          block.innerHTML = `
+            <div class="ch-header">
+              <span class="ch-badge">CH. ${String(chapterNum).padStart(2,'0')}</span>
+              <span class="ch-label">CHAPTER ${chapterNum}</span>
+              <span class="ch-pg-count">${ch.pages.length} PAGES</span>
+            </div>
+          `;
+
+          // Pages
+          ch.pages.forEach((file, pageIdx) => {
+            const pageNum = pageIdx + 1;
+            const wrap = document.createElement('div');
+            wrap.className = 'page-wrap';
+
+            const img = document.createElement('img');
+            // Set error handler BEFORE src
+            img.onerror = function() {
+              wrap.innerHTML = '';
+              const placeholder = document.createElement('div');
+              placeholder.className = 'page-placeholder';
+              placeholder.innerHTML = `
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="1.2">
+                  <rect x="3" y="3" width="18" height="18" rx="2"/>
+                  <path d="M3 9l4-4 4 4 4-4 4 4"/>
+                  <circle cx="8.5" cy="14" r="1.5"/>
+                </svg>
+                <span>PAGE ${pageNum} / ${ch.pages.length}</span>
+              `;
+              const pageLabel = document.createElement('div');
+              pageLabel.className = 'page-num';
+              pageLabel.textContent = `${pageNum} / ${ch.pages.length}`;
+              wrap.appendChild(placeholder);
+              wrap.appendChild(pageLabel);
+            };
+            img.src = PAGES_FOLDER + file;
+            img.alt = `Ch${chapterNum} P${pageNum}`;
+            img.loading = 'lazy';
+
+            const label = document.createElement('div');
+            label.className = 'page-num';
+            label.textContent = `${pageNum} / ${ch.pages.length}`;
+
+            wrap.appendChild(img);
+            wrap.appendChild(label);
+            block.appendChild(wrap);
+          });
+
+          main.appendChild(block);
+        });
+
+        setupActiveChapterObserver();
+      }
+
+      // Scroll to specific chapter
+      function gotoChapter(num) {
+        const el = document.getElementById(`ch-${num}`);
+        if (!el) return;
+        const y = el.getBoundingClientRect().top + window.scrollY - headerHeight;
+        window.scrollTo({ top: y, behavior: 'smooth' });
+      }
+
+      // Jump to chapter from input
+      function jumpChapter() {
+        const val = parseInt(jumpInput.value, 10);
+        if (isNaN(val) || val < 1) return;
+        if (val > MANGA.length) {
+          alert(`Only ${MANGA.length} chapter(s) available.`);
+          return;
+        }
+        gotoChapter(val);
+      }
+
+      // Highlight active chapter in sidebar while scrolling
+      function setupActiveChapterObserver() {
+        if (window.activeChapterObserver) {
+          window.activeChapterObserver.disconnect();
+        }
+
+        const observer = new IntersectionObserver(entries => {
+          entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+
+            const chapterNum = entry.target.id.split('-')[1];
+            
+            document.querySelectorAll('.ch-link').forEach(btn => {
+              btn.classList.remove('active');
+            });
+            
+            const activeBtn = document.getElementById(`sb-${chapterNum}`);
+            if (activeBtn) activeBtn.classList.add('active');
+          });
+        }, {
+          rootMargin: '-20% 0px -30% 0px',
+          threshold: 0
+        });
+
+        document.querySelectorAll('.ch-block').forEach(block => observer.observe(block));
+        window.activeChapterObserver = observer;
+      }
+
+      // Back to top button visibility
+      function handleScroll() {
+        backTop.classList.toggle('show', window.scrollY > 500);
+      }
+
+      // Initialize everything
+      build();
+      jumpButton.addEventListener('click', jumpChapter);
+      jumpInput.addEventListener('keydown', e => {
+        if (e.key === 'Enter') jumpChapter();
+      });
+      window.addEventListener('scroll', handleScroll, { passive: true });
     });
-  }, options);
-
-  document.querySelectorAll('.chapter-section').forEach(s => observer.observe(s));
-}
-
-
-// ── BACK TO TOP VISIBILITY ─────────────────────────────
-
-window.addEventListener('scroll', () => {
-  if (window.scrollY > 400) {
-    backTop.classList.add('visible');
-  } else {
-    backTop.classList.remove('visible');
-  }
-}, { passive: true });
-
-
-// ── INIT ───────────────────────────────────────────────
-build();
+  })();
 </script>
 
 </body>
