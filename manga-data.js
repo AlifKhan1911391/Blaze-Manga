@@ -25,7 +25,8 @@ const MANGA = [
     pages: [
       "pg10.png",
       "pg11.png",
-      "pg12.png"
+      "pg12.png", 
+      "pg13.png"
     ]
   }
   
