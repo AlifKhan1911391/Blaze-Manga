@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Blaze Manga</title>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
     :root {
       --bg: #0e0e0e;
@@ -116,27 +117,17 @@
     }
     .social-link {
       margin-left: auto;
-      display: flex;
-      align-items: center;
     }
     .social-link a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 24px;
+      transition: color 0.15s;
       display: flex;
       align-items: center;
-      gap: 6px;
-      text-decoration: none;
-      transition: opacity 0.15s;
     }
     .social-link a:hover {
-      opacity: 0.8;
-    }
-    .social-link svg {
-      width: 22px;
-      height: 22px;
-      fill: var(--muted);
-      transition: fill 0.15s;
-    }
-    .social-link a:hover svg {
-      fill: var(--gold);
+      color: var(--gold);
     }
     .layout {
       display: flex;
@@ -216,29 +207,29 @@
       padding: 0 16px;
     }
     .ch-header {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 24px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid var(--border);
+      text-align: center;
+      margin-bottom: 32px;
+      position: relative;
     }
-    .ch-badge {
+    .ch-title {
       font-family: 'Bebas Neue', cursive;
-      font-size: 24px;
+      font-size: 32px;
       letter-spacing: 4px;
-      color: var(--red);
-      background: rgba(184,50,34,0.1);
-      border: 1px solid rgba(184,50,34,0.25);
-      padding: 6px 18px;
-      border-radius: 4px;
+      color: var(--white);
+      background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dim) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
       display: inline-block;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--gold);
     }
     .page-wrap {
       position: relative;
       width: 100%;
-      margin-bottom: 3px;
+      margin-bottom: 16px;  /* increased spacing between pages */
       background: var(--surface);
-      border-radius: 2px;
+      border-radius: 4px;
       overflow: hidden;
     }
     .page-wrap img {
@@ -269,7 +260,7 @@
       display: flex;
       gap: 20px;
       justify-content: center;
-      margin-top: 20px;
+      margin-top: 32px;
       margin-bottom: 40px;
     }
     .nav-buttons button {
@@ -320,9 +311,8 @@
       .social-link {
         margin-left: 0;
       }
-      .ch-badge {
-        font-size: 20px;
-        padding: 4px 14px;
+      .ch-title {
+        font-size: 28px;
       }
     }
   </style>
@@ -342,9 +332,7 @@
   </div>
   <div class="social-link">
     <a href="https://www.instagram.com/myblaze_manga?igsh=Z24waDVtMDFkdnh6" target="_blank" rel="noopener noreferrer">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.366.062 2.633.336 3.608 1.311.975.975 1.249 2.242 1.311 3.608.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.062 1.366-.336 2.633-1.311 3.608-.975.975-2.242 1.249-3.608 1.311-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-1.366-.062-2.633-.336-3.608-1.311-.975-.975-1.249-2.242-1.311-3.608-.058-1.266-.07-1.646-.07-4.85s.012-3.584.07-4.85c.062-1.366.336-2.633 1.311-3.608.975-.975 2.242-1.249 3.608-1.311 1.266-.058 1.646-.07 4.85-.07zM12 0C8.741 0 8.332.014 7.052.072 5.775.13 4.513.403 3.458 1.458 2.403 2.513 2.13 3.775 2.072 5.052 2.014 6.332 2 6.741 2 10s.014 3.668.072 4.948c.058 1.277.331 2.539 1.386 3.594 1.055 1.055 2.317 1.328 3.594 1.386 1.28.058 1.689.072 4.948.072s3.668-.014 4.948-.072c1.277-.058 2.539-.331 3.594-1.386 1.055-1.055 1.328-2.317 1.386-3.594.058-1.28.072-1.689.072-4.948s-.014-3.668-.072-4.948c-.058-1.277-.331-2.539-1.386-3.594-1.055-1.055-2.317-1.328-3.594-1.386C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.88 1.44 1.44 0 000-2.88z"/>
-      </svg>
+      <i class="fab fa-instagram-square"></i>
     </a>
   </div>
 </header>
@@ -371,7 +359,6 @@
       const main = document.getElementById('main');
       const jumpInput = document.getElementById('jump-input');
       const jumpButton = document.getElementById('jump-button');
-      const headerHeight = 56;
 
       let currentChapter = 1;
 
@@ -417,10 +404,10 @@
         block.className = 'ch-block';
         block.id = `ch-${chapterNum}`;
 
-        // Centered enlarged badge (no page count)
+        // New chapter header: centered, gradient text, gold underline
         block.innerHTML = `
           <div class="ch-header">
-            <div class="ch-badge">CH. ${String(chapterNum).padStart(2,'0')}</div>
+            <div class="ch-title">CHAPTER ${String(chapterNum).padStart(2,'0')}</div>
           </div>
         `;
 
