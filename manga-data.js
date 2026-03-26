@@ -37,7 +37,18 @@ const MANGA = [
 // Chapter 3 (filler)
   {
   pages: [
-"ch3_cover.png"
+"ch3_cover.png",
+"pg17.png",
+"pg18.png",
+"pg19.png",
+"pg20.png",
+"pg21.png",
+"pg22.png",
+"pg23.png",
+"pg24.png",
+"pg25.png",
+"pg26.png",
+"pg27.png"
 ]
 
 
