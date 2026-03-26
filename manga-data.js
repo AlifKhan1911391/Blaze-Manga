@@ -19,7 +19,7 @@ const MANGA = [
       "pg9.png"
     ]
   },
-  
+
   // Chapter 2
   {
     pages: [
@@ -34,25 +34,36 @@ const MANGA = [
     ]
   },
 
-// Chapter 3 (filler)
+  // Chapter 3 (filler)
   {
-  pages: [
-"ch3_cover.png",
-"pg17.png",
-"pg18.png",
-"pg19.png",
-"pg20.png",
-"pg21.png",
-"pg22.png",
-"pg23.png",
-"pg24.png",
-"pg25.png",
-"pg26.png",
-"pg27.png"
-]
+    pages: [
+      "ch3_cover.png",
+      "pg17.png",
+      "pg18.png",
+      "pg19.png",
+      "pg20.png",
+      "pg21.png",
+      "pg22.png",
+      "pg23.png",
+      "pg24.png",
+      "pg25.png",
+      "pg26.png",
+      "pg27.png"
+    ]
+  },
 
-
-}
+  // Chapter 4
+  {
+    pages: [
+      "pg28.png",
+      "pg29.png",
+      "pg30.png",
+      "pg31.png",
+      "pg32.png",
+      "pg33.png",
+      "pg34.png"
+    ]
+  }
   // ==========================================
   // ADD NEW CHAPTERS BELOW - Copy this block:
   // ==========================================
