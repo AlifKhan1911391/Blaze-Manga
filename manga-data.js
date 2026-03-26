@@ -23,10 +23,14 @@ const MANGA = [
   // Chapter 2
   {
     pages: [
+      "ch2_cover.png",
       "pg10.png",
       "pg11.png",
       "pg12.png", 
-      "pg13.png"
+      "pg13.png",
+      "pg14.png",
+      "pg15.png",
+      "pg16.png"
     ]
   }
   
