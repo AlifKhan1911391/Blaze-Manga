@@ -32,8 +32,16 @@ const MANGA = [
       "pg15.png",
       "pg16.png"
     ]
-  }
-  
+  },
+
+// Chapter 3 (filler)
+  {
+  pages: [
+"ch3_cover.png"
+]
+
+
+}
   // ==========================================
   // ADD NEW CHAPTERS BELOW - Copy this block:
   // ==========================================
