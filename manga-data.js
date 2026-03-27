@@ -8,6 +8,7 @@ const MANGA = [
   // Chapter 1
   {
     pages: [
+      "cover.png",
       "pg1.png",
       "pg2.png",
       "pg3.png",
