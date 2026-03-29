@@ -1,7 +1,3 @@
-// ============================================
-// MANGA DATA - Edit only this file
-// ============================================
-
 const PAGES_FOLDER = "pages/";
 
 const MANGA = [
@@ -73,14 +69,4 @@ const MANGA = [
       "ending.png"
     ]
   },
-  // ==========================================
-  // ADD NEW CHAPTERS BELOW - Copy this block:
-  // ==========================================
-  // {
-  //   pages: [
-  //     "pg13.png",
-  //     "pg14.png",
-  //     "pg15.png"
-  //   ]
-  // }
 ];
