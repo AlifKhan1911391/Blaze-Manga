@@ -64,7 +64,15 @@ const MANGA = [
       "pg33.png",
       "pg34.png"
     ]
-  }
+  },
+
+  // Chapter 5 cover & ending announcement
+  {
+    pages:[
+      "1774609036343.png",
+      "ending.png"
+    ]
+  },
   // ==========================================
   // ADD NEW CHAPTERS BELOW - Copy this block:
   // ==========================================
